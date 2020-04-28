@@ -7,6 +7,9 @@
 //
 // File : mlist.cc
 // Author : Ryosuke Itoh, IPNS, KEK
+// Modified by T.Nozaki  (2005/10/04)
+// Modified by S.Nishida (2007/02/03)
+// Modified by T.Nozaki (2009/07/01) Comments in English
 
 #include <cstdio>
 #include <cmath>
@@ -41,8 +44,7 @@ void analysis ( char* file, int maxevt = 0 ) {
 
   /* New histogram file. First argument is file name, second argument is descriptor,
      third argument is number of bins, fourth and fifth arguments are bin value range. */
-  TH1F *Hist1 = new TH1F ( "Hist1", "mass of all particles", 50, 0, 50 );
-  TH1F *Hist2 = new TH1F ( "Hist2", "mass of all particles", 1000, 0, 1 );
+  TH1F *Hist1 = new TH1F ( "Hist1", "mass of all hypothetical parent particles", 1000, 0, 1 );
 
 
   // Number of events in data
@@ -77,21 +79,20 @@ void analysis ( char* file, int maxevt = 0 ) {
         float  e1 = p1->e();  // energy
       for ( int n=0;n<nparticles;n++ ) {
         if ( m != n) // I do not want to analyze particles against themselves
-          BParticle* p2 = (BParticle*)plist[n];
-          float px2 = p2->px();  // x momentum
-          float py2 = p2->py();  // y momentum
-          float pz2 = p2->pz();  // z momentum
-          float  e2 = p2->e();   // energy
+          p1 = (BParticle*)plist[n];
+          float px2 = p1->px();  // x momentum
+          float py2 = p1->py();  // y momentum
+          float pz2 = p1->pz();  // z momentum
+          float  e2 = p1->e();   // energy
 
           // calculate momentum and energy of hypothetical parent particle,
           // using conservation of momentum and energy
-          float px3 = px1 + px2
-          float py3 = py1 + py2
-          float pz3 = pz1 + pz2
-          float  e3 = e1 + e2
+          float px3 = px1 + px2;
+          float py3 = py1 + py2;
+          float pz3 = pz1 + pz2;
+          float  e3 = e1 + e2;
           float mass = sqrt ( e3*e3-px3*px3-py3*py3-pz3*pz3 ); // mass of parent
-          Hist1->Fill( mass ) // enter parent mass into histograms
-          Hist2->Fill( mass )
+          Hist1->Fill( mass ); // enter parent mass into histograms
         }
     }
     // clear event
@@ -103,7 +104,6 @@ void analysis ( char* file, int maxevt = 0 ) {
   hf->Write();
   // display histograms
   Hist1->Draw();
-  Hist2->Draw();
  }
 
 // The function showhist is used when the histograms are displayed.
